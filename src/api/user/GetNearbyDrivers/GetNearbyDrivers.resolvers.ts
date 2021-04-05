@@ -1,8 +1,8 @@
-import { User } from "../../../entities/index";
 import { Between, getRepository } from "typeorm";
+import User from "../../../entities/User";
 import { GetNearbyDriversResponse } from "../../../types/graph";
 import { Resolvers } from "../../../types/resolvers";
-import { privateResolver } from "../../../utils/index";
+import privateResolver from "../../../utils/privateResolver";
 
 const resolvers: Resolvers = {
   Query: {
@@ -16,14 +16,6 @@ const resolvers: Resolvers = {
             lastLat: Between(lastLat - 0.05, lastLat + 0.05),
             lastLng: Between(lastLng - 0.05, lastLng + 0.05),
           });
-          if (!drivers) {
-            return {
-              ok: true,
-              error: null,
-              drivers: null,
-            };
-          }
-
           return {
             ok: true,
             error: null,
@@ -36,7 +28,7 @@ const resolvers: Resolvers = {
             drivers: null,
           };
         }
-      }
+      },
     ),
   },
 };

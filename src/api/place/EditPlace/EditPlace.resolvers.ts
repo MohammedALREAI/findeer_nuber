@@ -1,24 +1,21 @@
-import { Place, User } from '../../../entities';
+import Place from "../../../entities/Place";
+import User from "../../../entities/User";
 import { EditPlaceMutationArgs, EditPlaceResponse } from "../../../types/graph";
 import { Resolvers } from "../../../types/resolvers";
-import {privateResolver,cleanNullArgs} from "../../../utils/index";
+import cleanNullArgs from "../../../utils/cleanNullArg";
+import privateResolver from "../../../utils/privateResolver";
 
 const resolvers: Resolvers = {
   Mutation: {
     EditPlace: privateResolver(
-      async (
-        _,
-        args: EditPlaceMutationArgs,
-        { req }
-      ): Promise<EditPlaceResponse> => {
+      async (_, args: EditPlaceMutationArgs, { req }): Promise<EditPlaceResponse> => {
         const user: User = req.user;
-        const {placeId}=args.data
         try {
-          const place = await Place.findOne({ id: placeId });
+          const place = await Place.findOne({ id: args.placeId });
           if (place) {
             if (place.userId === user.id) {
-              const notNull = cleanNullArgs(args.data);
-              await Place.update({ id: placeId }, { ...notNull });
+              const notNull = cleanNullArgs(args);
+              await Place.update({ id: args.placeId }, { ...notNull });
               return {
                 ok: true,
                 error: null,
@@ -26,13 +23,13 @@ const resolvers: Resolvers = {
             } else {
               return {
                 ok: false,
-                error: "Not Authorized to access this place ",
+                error: "Not Authorized",
               };
             }
           } else {
             return {
               ok: false,
-              error: "Place not found ",
+              error: "Place not found",
             };
           }
         } catch (error) {
@@ -41,7 +38,7 @@ const resolvers: Resolvers = {
             error: error.message,
           };
         }
-      }
+      },
     ),
   },
 };

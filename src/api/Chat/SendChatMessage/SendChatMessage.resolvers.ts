@@ -1,10 +1,9 @@
-import {Message,Chat,User} from "../../../entities/index";
-import {
-  SendChatMessageMutationArgs,
-  SendChatMessageResponse
-} from "../../../types/graph";
-import { Resolvers } from "../../../types/index";
-import {privateResolver} from "../../../utils/index";
+import Chat from "../../../entities/Chat";
+import Message from "../../../entities/Message";
+import User from "../../../entities/User";
+import { SendChatMessageMutationArgs, SendChatMessageResponse } from "../../../types/graph";
+import { Resolvers } from "../../../types/resolvers";
+import privateResolver from "../../../utils/privateResolver";
 
 const resolvers: Resolvers = {
   Mutation: {
@@ -12,7 +11,7 @@ const resolvers: Resolvers = {
       async (
         _,
         args: SendChatMessageMutationArgs,
-        { req, pubSub }
+        { req, pubSub },
       ): Promise<SendChatMessageResponse> => {
         const user: User = req.user;
         try {
@@ -22,40 +21,40 @@ const resolvers: Resolvers = {
               const message = await Message.create({
                 text: args.text,
                 chat,
-                user
+                user,
               }).save();
               pubSub.publish("newChatMessage", {
-                MessageSubscription: message
+                MessageSubscription: message,
               });
               return {
                 ok: true,
                 error: null,
-                message
+                message,
               };
             } else {
               return {
                 ok: false,
                 error: "Unauthorized",
-                message: null
+                message: null,
               };
             }
           } else {
             return {
               ok: false,
               error: "Chat not found",
-              message: null
+              message: null,
             };
           }
         } catch (error) {
           return {
             ok: false,
             error: error.message,
-            message: null
+            message: null,
           };
         }
-      }
-    )
-  }
+      },
+    ),
+  },
 };
 
 export default resolvers;

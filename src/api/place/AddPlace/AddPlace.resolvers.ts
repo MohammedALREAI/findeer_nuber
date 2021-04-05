@@ -1,31 +1,16 @@
-import { privateResolver } from '../../../utils/index';
-import { Place, User } from "../../../entities/index";
+import Place from "../../../entities/Place";
+import User from "../../../entities/User";
 import { AddPlaceMutationArgs, AddPlaceResponse } from "../../../types/graph";
 import { Resolvers } from "../../../types/resolvers";
+import privateResolver from "../../../utils/privateResolver";
 
-
-
-
-// // @addplace
-
-
-// // args
-// name: String!
-// 	lat: Float!
-// 	lng: Float!
-// 	address: String!
-// 	isFav: Boolean!
 const resolvers: Resolvers = {
   Mutation: {
     AddPlace: privateResolver(
-      async (
-        _,
-        args: AddPlaceMutationArgs,
-        { req }
-      ): Promise<AddPlaceResponse> => {
+      async (_, args: AddPlaceMutationArgs, { req }): Promise<AddPlaceResponse> => {
         const user: User = req.user;
         try {
-          await Place.create({ ...args.data, user }).save();
+          await Place.create({ ...args, user }).save();
           return {
             ok: true,
             error: null,
@@ -36,7 +21,7 @@ const resolvers: Resolvers = {
             error: error.message,
           };
         }
-      }
+      },
     ),
   },
 };

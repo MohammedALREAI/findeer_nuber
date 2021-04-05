@@ -1,6 +1,6 @@
 type User {
-  id: ID!
-  email: String! @unique
+  id: Int!
+  email: String
   verifiedEmail: Boolean!
   firstName: String!
   lastName: String!
@@ -24,9 +24,5 @@ type User {
   chatsAsPassenger: [Chat]
   places: [Place]
   createdAt: String!
-  updatedAt: String!
-}
-
-type Query {
-  user: User
+  updatedAt: String
 }

@@ -1,8 +1,9 @@
-import { Verification, User } from "../../../entities/index";
+import User from "../../../entities/User";
+import Verification from "../../../entities/Verification";
 import { RequestEmailVerificationResponse } from "../../../types/graph";
 import { Resolvers } from "../../../types/resolvers";
-import { privateResolver, EmailHandle } from "../../../utils/index";
-import { TargetType } from "../../../types/type.d";
+import privateResolver from "../../../utils/privateResolver";
+import { sendVerificationEmail } from "../../../utils/sendEmail";
 
 const resolvers: Resolvers = {
   Mutation: {
@@ -19,12 +20,9 @@ const resolvers: Resolvers = {
             }
             const newVerification = await Verification.create({
               payload: user.email,
-              target: TargetType.Email,
+              target: "EMAIL",
             }).save();
-            await EmailHandle.sendVerificationEmail(
-              user.fullName,
-              newVerification.key
-            );
+            await sendVerificationEmail(user.fullName, newVerification.key);
             return {
               ok: true,
               error: null,
@@ -41,7 +39,7 @@ const resolvers: Resolvers = {
             error: "Your user has no email to verify",
           };
         }
-      }
+      },
     ),
   },
 };

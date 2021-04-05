@@ -1,5 +1,5 @@
 import { withFilter } from "graphql-yoga";
-import {User} from "../../../entities/index";
+import User from "../../../entities/User";
 
 const resolvers = {
   Subscription: {
@@ -9,13 +9,13 @@ const resolvers = {
         (payload, _, { context }) => {
           const user: User = context.currentUser;
           const {
-            RideStatusSubscription: { driverId, passengerId }
+            RideStatusSubscription: { driverId, passengerId },
           } = payload;
           return user.id === driverId || user.id === passengerId;
-        }
-      )
-    }
-  }
+        },
+      ),
+    },
+  },
 };
 
 export default resolvers;

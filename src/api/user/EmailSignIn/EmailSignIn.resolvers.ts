@@ -1,22 +1,14 @@
-import { optionsJWT } from "./../../../utils/index";
-import { User } from "../../../entities/index";
-import {
-  EmailSignInMutationArgs,
-  EmailSignInResponse,
-} from "../../../types/graph";
-import { Resolvers } from "../../../types/index";
+import User from "../../../entities/User";
+import { EmailSignInMutationArgs, EmailSignInResponse } from "../../../types/graph";
+import { Resolvers } from "../../../types/resolvers";
+import createJWT from "../../../utils/createJWT";
 
 const resolvers: Resolvers = {
   Mutation: {
-    EmailSignIn: async (
-      _,
-      args: EmailSignInMutationArgs
-    ): Promise<EmailSignInResponse> => {
-      const { email, password } = args.data;
+    EmailSignIn: async (_, args: EmailSignInMutationArgs): Promise<EmailSignInResponse> => {
+      const { email, password } = args;
       try {
-        //cheack use is found
         const user = await User.findOne({ email });
-
         if (!user) {
           return {
             ok: false,
@@ -24,10 +16,9 @@ const resolvers: Resolvers = {
             token: null,
           };
         }
-        //decript the passsword
         const checkPassword = await user.comparePassword(password);
         if (checkPassword) {
-          const token = optionsJWT.createJWT(user.id + "");
+          const token = createJWT(user.id);
           return {
             ok: true,
             error: null,
@@ -36,7 +27,7 @@ const resolvers: Resolvers = {
         } else {
           return {
             ok: false,
-            error: "Wrong password  pales enter corrects  password ",
+            error: "Wrong password",
             token: null,
           };
         }

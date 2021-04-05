@@ -1,12 +1,9 @@
 type EmailSignInResponse {
-	ok: Boolean!
-	error: String
-	token: String
+  ok: Boolean!
+  error: String
+  token: String
 }
 
-input EmailSignInInput{
-     email: String!, password: String!
-}
 type Mutation {
-	EmailSignIn(data:EmailSignInInput!): EmailSignInResponse!
+  EmailSignIn(email: String!, password: String!): EmailSignInResponse!
 }

@@ -1,21 +1,19 @@
-import { optionsJWT } from "./../../../utils/index";
-import {
-  FacebookConnectMutationArgs,
-  FacebookConnectResponse,
-} from "./../../../types/graph.d";
-import { User } from "../../../entities/User";
-import { Resolvers } from "./../../../types/index";
+import User from "../../../entities/User";
+import { FacebookConnectMutationArgs, FacebookConnectResponse } from "../../../types/graph";
+import { Resolvers } from "../../../types/resolvers";
+import createJWT from "../../../utils/createJWT";
+
 const resolvers: Resolvers = {
   Mutation: {
     FacebookConnect: async (
       _,
-      args: FacebookConnectMutationArgs
+      args: FacebookConnectMutationArgs,
     ): Promise<FacebookConnectResponse> => {
       const { fbId } = args;
       try {
         const existingUser = await User.findOne({ fbId });
         if (existingUser) {
-          const token = optionsJWT.createJWT(String(existingUser.id));
+          const token = createJWT(existingUser.id);
           return {
             ok: true,
             error: null,
@@ -34,7 +32,7 @@ const resolvers: Resolvers = {
           ...args,
           profilePhoto: `http://graph.facebook.com/${fbId}/picture?type=square`,
         }).save();
-        const token = optionsJWT.createJWT(String(newUser.id));
+        const token = createJWT(newUser.id);
         return {
           ok: true,
           error: null,

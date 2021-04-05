@@ -1,10 +1,11 @@
-import { User, Verification } from "../../../entities/index";
-import { privateResolver } from "../../../utils/index";
+import User from "../../../entities/User";
+import Verification from "../../../entities/Verification";
 import {
   CompleteEmailVerificationMutationArgs,
   CompleteEmailVerificationResponse,
 } from "../../../types/graph";
-import { Resolvers } from "../../../types/index";
+import { Resolvers } from "../../../types/resolvers";
+import privateResolver from "../../../utils/privateResolver";
 
 const resolvers: Resolvers = {
   Mutation: {
@@ -12,7 +13,7 @@ const resolvers: Resolvers = {
       async (
         _,
         args: CompleteEmailVerificationMutationArgs,
-        { req }
+        { req },
       ): Promise<CompleteEmailVerificationResponse> => {
         const user: User = req.user;
         const { key } = args;
@@ -20,7 +21,7 @@ const resolvers: Resolvers = {
           try {
             const verification = await Verification.findOne({
               key,
-              payload : user.email,
+              payload: user.email,
             });
             if (verification) {
               user.verifiedEmail = true;
@@ -47,7 +48,7 @@ const resolvers: Resolvers = {
             error: "No email to verify",
           };
         }
-      }
+      },
     ),
   },
 };

@@ -1,17 +1,16 @@
-import { Resolvers } from "../../../types/index";
-import { User } from "../../../entities/index";
-import { privateResolver, cleanNullArgs } from "../../../utils/index";
-import {
-  ReportMovementMutationArgs,
-  ReportMovementResponse,
-} from "../../../types/graph";
+import User from "../../../entities/User";
+import { ReportMovementMutationArgs, ReportMovementResponse } from "../../../types/graph";
+import { Resolvers } from "../../../types/resolvers";
+import cleanNullArgs from "../../../utils/cleanNullArg";
+import privateResolver from "../../../utils/privateResolver";
+
 const resolvers: Resolvers = {
   Mutation: {
     ReportMovement: privateResolver(
       async (
         _,
         args: ReportMovementMutationArgs,
-        { req, pubSub }
+        { req, pubSub },
       ): Promise<ReportMovementResponse> => {
         const user: User = req.user;
         const notNull = cleanNullArgs(args);
@@ -29,7 +28,7 @@ const resolvers: Resolvers = {
             error: error.message,
           };
         }
-      }
+      },
     ),
   },
 };

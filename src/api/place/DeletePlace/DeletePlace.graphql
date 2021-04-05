@@ -1,8 +1,8 @@
 type DeletePlaceResponse {
-	ok: Boolean!
-	error: String
+  ok: Boolean!
+  error: String
 }
 
 type Mutation {
-	DeletePlace(placeId: Int!): DeletePlaceResponse!
+  DeletePlace(placeId: Int!): DeletePlaceResponse!
 }

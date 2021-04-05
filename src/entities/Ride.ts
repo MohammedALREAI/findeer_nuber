@@ -9,18 +9,18 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { rideStatus } from "../types/index";
-import { User, Chat } from "./index";
-
+import { rideStatus } from "../types/types";
+import Chat from "./Chat";
+import User from "./User";
 
 @Entity()
-export class Ride extends BaseEntity {
+class Ride extends BaseEntity {
   @PrimaryGeneratedColumn() id: number;
 
   @Column({
     type: "text",
     enum: ["ACCEPTED", "FINISHED", "CANCELED", "REQUESTING", "ONROUTE"],
-    default: "REQUESTING"
+    default: "REQUESTING",
   })
   status: rideStatus;
 
@@ -74,3 +74,4 @@ export class Ride extends BaseEntity {
 
   @UpdateDateColumn() updatedAt: string;
 }
+export default Ride;

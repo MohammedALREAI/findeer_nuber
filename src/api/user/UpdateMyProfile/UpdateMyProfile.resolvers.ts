@@ -1,21 +1,13 @@
-import { cleanNullArgs, privateResolver } from "./../../../utils/index";
-import { User } from "../../../entities/User";
-import {
-  UpdateMyProfileMutationArgs,
-  UpdateMyProfileResponse,
-} from "../../../types/graph";
-import { Resolvers } from "../../../types/index";
+import User from "../../../entities/User";
+import { UpdateMyProfileMutationArgs, UpdateMyProfileResponse } from "../../../types/graph";
+import { Resolvers } from "../../../types/resolvers";
+import cleanNullArgs from "../../../utils/cleanNullArg";
+import privateResolver from "../../../utils/privateResolver";
 
-// when we send this is async it will be return promise
-//to ansure the user is login in in the application
 const resolvers: Resolvers = {
   Mutation: {
     UpdateMyProfile: privateResolver(
-      async (
-        _,
-        args: UpdateMyProfileMutationArgs,
-        { req }
-      ): Promise<UpdateMyProfileResponse> => {
+      async (_, args: UpdateMyProfileMutationArgs, { req }): Promise<UpdateMyProfileResponse> => {
         const user: User = req.user;
         const notNull: any = cleanNullArgs(args);
         if (notNull.password) {
@@ -35,7 +27,7 @@ const resolvers: Resolvers = {
             error: error.message,
           };
         }
-      }
+      },
     ),
   },
 };

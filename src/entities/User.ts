@@ -11,12 +11,15 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { Chat, Message, Place, Ride } from "./index";
+import Chat from "./Chat";
+import Message from "./Message";
+import Place from "./Place";
+import Ride from "./Ride";
 
 const BCRYPT_ROUNDS = 10;
 
 @Entity()
-export class User extends BaseEntity {
+class User extends BaseEntity {
   @PrimaryGeneratedColumn() id: number;
 
   @Column({ type: "text", nullable: true })
@@ -68,27 +71,27 @@ export class User extends BaseEntity {
   @Column({ type: "text", nullable: true })
   fbId: string;
 
-  @OneToMany((type) => Chat, (chat) => chat.passenger)
+  @OneToMany(type => Chat, chat => chat.passenger)
   chatsAsPassenger: Chat[];
 
-  @OneToMany((type) => Chat, (chat) => chat.driver)
+  @OneToMany(type => Chat, chat => chat.driver)
   chatsAsDriver: Chat[];
 
-  @OneToMany((type) => Message, (message) => message.user)
+  @OneToMany(type => Message, message => message.user)
   messages: Message[];
 
-  @OneToMany((type) => Ride, (ride) => ride.passenger)
+  @OneToMany(type => Ride, ride => ride.passenger)
   ridesAsPassenger: Ride[];
 
-  @OneToMany((type) => Ride, (ride) => ride.driver)
+  @OneToMany(type => Ride, ride => ride.driver)
   ridesAsDriver: Ride[];
 
-  @OneToMany((type) => Place, (place) => place.user)
-  places: Place[]; 
+  @OneToMany(type => Place, place => place.user)
+  places: Place[];
 
-  @CreateDateColumn() createdAt: Date;
+  @CreateDateColumn() createdAt: string;
 
-  @UpdateDateColumn() updatedAt: Date;
+  @UpdateDateColumn() updatedAt: string;
 
   get fullName(): string {
     return `${this.firstName} ${this.lastName}`;
@@ -111,3 +114,5 @@ export class User extends BaseEntity {
     return bcrypt.hash(password, BCRYPT_ROUNDS);
   }
 }
+
+export default User;

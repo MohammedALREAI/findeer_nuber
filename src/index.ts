@@ -4,13 +4,13 @@ dotenv.config({ path: "../.env" });
 import { Options } from "graphql-yoga";
 import { createConnection } from "typeorm";
 import app from "./app";
-import { connectionOptions } from "./ormconfig";
-import { optionsJWT } from "./utils/decodeJWT";
+import connectionOptions from "./ormConfig";
+import decodeJWT from "./utils/decodeJWT";
 
 const PORT: number | string = process.env.PORT || 4000;
-const PLAYGROUND_ENDPOINT: string = "/playground";
-const GRAPHQL_ENDPOINT: string = "/graphql";
-const SUBSCRIPTION_ENDPOINT: string = "/subscription";
+const PLAYGROUND_ENDPOINT = "/playground";
+const GRAPHQL_ENDPOINT = "/graphql";
+const SUBSCRIPTION_ENDPOINT = "/subscription";
 
 const appOptions: Options = {
   port: PORT,
@@ -18,10 +18,10 @@ const appOptions: Options = {
   endpoint: GRAPHQL_ENDPOINT,
   subscriptions: {
     path: SUBSCRIPTION_ENDPOINT,
-    onConnect: async (connectionParams) => {
+    onConnect: async connectionParams => {
       const token = connectionParams["X-JWT"];
       if (token) {
-        const user = await optionsJWT.decodeJWT(token);
+        const user = await decodeJWT(token);
         if (user) {
           return {
             currentUser: user,
@@ -33,10 +33,11 @@ const appOptions: Options = {
   },
 };
 
+const handleAppStart = () => console.log(`Listening on port ${PORT}`);
+
 createConnection(connectionOptions)
   .then(() => {
-    app.start(appOptions, () => {
-      console.log(`Listening on port ${PORT} 💥💥💥`);
-    });
+    console.log("the Database start to connecation");
+    app.start(appOptions, handleAppStart);
   })
-  .catch((error) => console.log(error));
+  .catch(error => console.log(error));

@@ -1,5 +1,5 @@
 import { withFilter } from "graphql-yoga";
-import { User } from "../../../entities/index";
+import User from "../../../entities/User";
 
 const resolvers = {
   Subscription: {
@@ -9,10 +9,7 @@ const resolvers = {
         (payload, _, { context }) => {
           const user: User = context.currentUser;
           const {
-            DriversSubscription: {
-              lastLat: driverLastLat,
-              lastLng: driverLastLng,
-            },
+            DriversSubscription: { lastLat: driverLastLat, lastLng: driverLastLng },
           } = payload;
           const { lastLat: userLastLat, lastLng: userLastLng } = user;
           return (
@@ -21,7 +18,7 @@ const resolvers = {
             driverLastLng >= userLastLng - 0.05 &&
             driverLastLng <= userLastLng + 0.05
           );
-        }
+        },
       ),
     },
   },

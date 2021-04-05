@@ -1,28 +1,20 @@
-import { User } from "../../../entities/User";
+import User from "../../../entities/User";
 import { GetMyPlacesResponse } from "../../../types/graph";
 import { Resolvers } from "../../../types/resolvers";
-import {privateResolver} from "../../../utils/index";
+import privateResolver from "../../../utils/privateResolver";
 
-
-// @ how it work
-// find the user how login by  privateResolver wutch will return the user the serche the place that found for this user
 const resolvers: Resolvers = {
   Query: {
     GetMyPlaces: privateResolver(
       async (_, __, { req }): Promise<GetMyPlacesResponse> => {
-           const id=req.user.id
         try {
-          const user: User = await User.findOne(
-            { id },
-            { relations: ["places"] }
-          );
-          if ( user && user.places) {
-               return {
+          const user = await User.findOne({ id: req.user.id }, { relations: ["places"] });
+          if (user) {
+            return {
               ok: true,
               places: user.places,
-              error: null,}
-
-
+              error: null,
+            };
           } else {
             return {
               ok: false,
@@ -37,7 +29,7 @@ const resolvers: Resolvers = {
             places: null,
           };
         }
-      }
+      },
     ),
   },
 };

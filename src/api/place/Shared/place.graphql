@@ -1,5 +1,5 @@
 type Place {
-  id: ID!
+  id: Int!
   name: String!
   lat: Float!
   lng: Float!
@@ -8,5 +8,5 @@ type Place {
   userId: Int!
   user: User!
   createdAt: String!
-  updatedAt: String!
+  updatedAt: String
 }

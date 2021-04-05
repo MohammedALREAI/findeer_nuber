@@ -11,11 +11,11 @@ type Query {
   GetRide(rideId: Int!): GetRideResponse!
   GetMyProfile: GetMyProfileResponse!
   GetNearbyDrivers: GetNearbyDriversResponse!
-  user: User
 }
 
 type Subscription {
   MessageSubscription: Message
+  NearbyRideSubscription: Ride
   RideStatusSubscription: Ride
   DriversSubscription: User
 }
@@ -28,15 +28,15 @@ type SendChatMessageResponse {
 
 type Mutation {
   SendChatMessage(text: String!, chatId: Int!): SendChatMessageResponse!
-  AddPlace(data: AddPlaceInput!): AddPlaceResponse!
+  AddPlace(name: String!, lat: Float!, lng: Float!, address: String!, isFav: Boolean!): AddPlaceResponse!
   DeletePlace(placeId: Int!): DeletePlaceResponse!
-  EditPlace(data: EditPlaceInput!): EditPlaceResponse!
-  RequestRide(data: RequestRideInput!): RequestRideResponse!
+  EditPlace(placeId: Int!, name: String, isFav: Boolean): EditPlaceResponse!
+  RequestRide(pickUpAddress: String!, pickUpLat: Float!, pickUpLng: Float!, dropOffAddress: String!, dropOffLat: Float!, dropOffLng: Float!, price: Float!, distance: String!, duration: String!): RequestRideResponse!
   UpdateRideStatus(rideId: Int!, status: StatusOptions!): UpdateRideStatusResponse!
   CompleteEmailVerification(key: String!): CompleteEmailVerificationResponse!
   CompletePhoneVerification(phoneNumber: String!, key: String!): CompletePhoneVerificationResponse!
-  EmailSignIn(data: EmailSignInInput!): EmailSignInResponse!
-  EmailSignUp(data: EmailSignUpInput!): EmailSignUpResponse!
+  EmailSignIn(email: String!, password: String!): EmailSignInResponse!
+  EmailSignUp(firstName: String!, lastName: String!, email: String!, password: String!, profilePhoto: String!, age: Int!, phoneNumber: String!): EmailSignUpResponse!
   FacebookConnect(firstName: String!, lastName: String!, email: String, fbId: String!): FacebookConnectResponse!
   ReportMovement(orientation: Float, lastLat: Float, lastLng: Float): ReportMovementResponse!
   RequestEmailVerification: RequestEmailVerificationResponse!
@@ -46,7 +46,7 @@ type Mutation {
 }
 
 type Chat {
-  id: ID!
+  id: Int!
   messages: [Message]
   passengerId: Int!
   passenger: User!
@@ -55,17 +55,17 @@ type Chat {
   rideId: Int
   ride: Ride!
   createdAt: String!
-  updatedAt: String!
+  updatedAt: String
 }
 
-# import '../../user/user'
 type Message {
-  id: ID!
+  id: Int!
   text: String!
+  chatId: Int
   chat: Chat!
   user: User!
   createdAt: String!
-  updatedAt: String!
+  updatedAt: String
 }
 
 type AddPlaceResponse {
@@ -73,23 +73,9 @@ type AddPlaceResponse {
   error: String
 }
 
-input AddPlaceInput {
-  name: String!
-  lat: Float!
-  lng: Float!
-  address: String!
-  isFav: Boolean!
-}
-
 type DeletePlaceResponse {
   ok: Boolean!
   error: String
-}
-
-input EditPlaceInput {
-  placeId: Int!
-  name: String
-  isFav: Boolean
 }
 
 type EditPlaceResponse {
@@ -104,7 +90,7 @@ type GetMyPlacesResponse {
 }
 
 type Place {
-  id: ID!
+  id: Int!
   name: String!
   lat: Float!
   lng: Float!
@@ -113,7 +99,7 @@ type Place {
   userId: Int!
   user: User!
   createdAt: String!
-  updatedAt: String!
+  updatedAt: String
 }
 
 type GetNearbyRideResponse {
@@ -134,29 +120,9 @@ type RequestRideResponse {
   ride: Ride
 }
 
-input RequestRideInput {
-  pickUpAddress: String!
-  pickUpLat: Float!
-  pickUpLng: Float!
-  dropOffAddress: String!
-  dropOffLat: Float!
-  dropOffLng: Float!
-  price: Float!
-  distance: String!
-  duration: String!
-}
-
-enum StatusState {
-  ACCEPTED
-  FINISHED
-  CANCELED
-  REQUESTING
-  ONROUTE
-}
-
 type Ride {
-  id: ID!
-  status: StatusState!
+  id: Int!
+  status: String!
   pickUpAddress: String!
   pickUpLat: Float!
   pickUpLng: Float!
@@ -173,7 +139,7 @@ type Ride {
   chat: Chat
   chatId: Int
   createdAt: String!
-  updatedAt: String!
+  updatedAt: String
 }
 
 type UpdateRideStatusResponse {
@@ -206,25 +172,10 @@ type EmailSignInResponse {
   token: String
 }
 
-input EmailSignInInput {
-  email: String!
-  password: String!
-}
-
 type EmailSignUpResponse {
   ok: Boolean!
   error: String
   token: String
-}
-
-input EmailSignUpInput {
-  firstName: String!
-  lastName: String!
-  email: String!
-  password: String!
-  profilePhoto: String!
-  age: Int!
-  phoneNumber: String!
 }
 
 type FacebookConnectResponse {
@@ -256,8 +207,8 @@ type RequestEmailVerificationResponse {
 }
 
 type User {
-  id: ID!
-  email: String! @unique
+  id: Int!
+  email: String
   verifiedEmail: Boolean!
   firstName: String!
   lastName: String!
@@ -281,7 +232,7 @@ type User {
   chatsAsPassenger: [Chat]
   places: [Place]
   createdAt: String!
-  updatedAt: String!
+  updatedAt: String
 }
 
 type StartPhoneVerificationResponse {
@@ -299,18 +250,12 @@ type UpdateMyProfileResponse {
   error: String
 }
 
-enum Target {
-  email
-  phone
-}
-
-# PAYLOAD LIKE MESSAGR FOR VERIVACATION LIKE 44545
 type Verification {
-  id: ID!
-  target: Target!
+  id: Int!
+  target: String!
   payload: String!
   key: String!
   verified: Boolean!
   createdAt: String!
-  updatedAt: String!
+  updatedAt: String
 }

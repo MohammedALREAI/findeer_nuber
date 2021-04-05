@@ -4,16 +4,14 @@ type EmailSignUpResponse {
   token: String
 }
 
-input EmailSignUpInput{
-     firstName: String!
+type Mutation {
+  EmailSignUp(
+    firstName: String!
     lastName: String!
     email: String!
     password: String!
     profilePhoto: String!
     age: Int!
     phoneNumber: String!
-}
-
-type Mutation {
-  EmailSignUp(data:EmailSignUpInput!): EmailSignUpResponse!
+  ): EmailSignUpResponse!
 }

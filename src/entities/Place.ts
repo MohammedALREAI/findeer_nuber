@@ -1,32 +1,41 @@
-import { User } from "./index";
 import {
   BaseEntity,
-  Entity,
-  PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
-  UpdateDateColumn,
+  Entity,
   ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from "typeorm";
+import User from "./User";
 
 @Entity()
-export class Place extends BaseEntity {
+class Place extends BaseEntity {
   @PrimaryGeneratedColumn() id: number;
+
   @Column({ type: "text" })
   name: string;
-  @Column({ type: "text" })
-  address: string;
+
   @Column({ type: "double precision", default: 0 })
   lat: number;
+
   @Column({ type: "double precision", default: 0 })
-  lag: number;
+  lng: number;
+
+  @Column({ type: "text" })
+  address: string;
+
   @Column({ type: "boolean", default: false })
   isFav: boolean;
+
   @Column({ nullable: true })
   userId: number;
-  @ManyToOne((type) => User, (user) => user.places)
+
+  @ManyToOne(type => User, user => user.places)
   user: User;
 
-  @CreateDateColumn() createdAt: Date;
-  @UpdateDateColumn() updatedAt: Date;
+  @CreateDateColumn() createdAt: string;
+
+  @UpdateDateColumn() updatedAt: string;
 }
+export default Place;

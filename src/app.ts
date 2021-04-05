@@ -1,12 +1,10 @@
-import path from "path";
-import "reflect-metadata";
-import { optionsJWT } from "./utils/decodeJWT";
 import cors from "cors";
 import { NextFunction, Response } from "express";
 import { GraphQLServer, PubSub } from "graphql-yoga";
 import helmet from "helmet";
 import logger from "morgan";
-import schema from'./schema'
+import { useSchema } from "./schema";
+import decodeJWT from "./utils/decodeJWT";
 
 class App {
   public app: GraphQLServer;
@@ -15,18 +13,9 @@ class App {
     this.pubSub = new PubSub();
     this.pubSub.ee.setMaxListeners(99);
 
-    this.middleware();
-  }
-  private middleware = async(): Promise<void> => {
-    this.app.express.use(cors());
-    this.app.express.use(logger("dev"));
-    this.app.express.use(helmet());
-    this.app.express.use(this.jwt);
-
-
-      this.app = new GraphQLServer({
-      schema,
-      context: (req) => {
+    this.app = new GraphQLServer({
+      schema: useSchema() as any,
+      context: req => {
         const { connection: { context = null } = {} } = req;
         return {
           req: req.request,
@@ -35,16 +24,19 @@ class App {
         };
       },
     });
+    this.middlewares();
+  }
+  private middlewares = (): void => {
+    this.app.express.use(cors());
+    this.app.express.use(logger("dev"));
+    this.app.express.use(helmet());
+    this.app.express.use(this.jwt);
   };
 
-  private jwt = async (
-    req,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
+  private jwt = async (req, res: Response, next: NextFunction): Promise<void> => {
     const token = req.get("X-JWT");
     if (token) {
-      const user = await optionsJWT.decodeJWT(token);
+      const user = await decodeJWT(token);
       if (user) {
         req.user = user;
       } else {
@@ -53,7 +45,6 @@ class App {
     }
     next();
   };
-
 }
 
 export default new App().app;

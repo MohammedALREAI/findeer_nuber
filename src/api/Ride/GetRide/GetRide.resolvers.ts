@@ -1,52 +1,50 @@
-import {User,Ride} from "../../../entities/index";
+import Ride from "../../../entities/Ride";
+import User from "../../../entities/User";
 import { GetRideQueryArgs, GetRideResponse } from "../../../types/graph";
 import { Resolvers } from "../../../types/resolvers";
-import {privateResolver} from "../../../utils/index";
-
+import privateResolver from "../../../utils/privateResolver";
 
 const resolvers: Resolvers = {
   Query: {
     GetRide: privateResolver(
       async (_, args: GetRideQueryArgs, { req }): Promise<GetRideResponse> => {
         const user: User = req.user;
-        const {rideId}=args
 
         try {
-          const ride:Ride|undefined = await Ride.findOne({id:rideId});
+          const ride = await Ride.findOne({
+            id: args.rideId,
+          });
           if (ride) {
             if (ride.passengerId === user.id || ride.driverId === user.id) {
-
-               const newRide:Ride=ride as Ride;
               return {
                 ok: true,
                 error: null,
-                ride: newRide
+                ride,
               };
             } else {
               return {
                 ok: false,
-                error: "Not Authorized to access this",
-                ride: null
+                error: "Not Authorized",
+                ride: null,
               };
             }
           } else {
-
             return {
               ok: false,
               error: "Ride not found",
-              ride: null
+              ride: null,
             };
           }
         } catch (error) {
           return {
             ok: false,
             error: error.message,
-            ride: null
+            ride: null,
           };
         }
-      }
-    )
-  }
+      },
+    ),
+  },
 };
 
 export default resolvers;

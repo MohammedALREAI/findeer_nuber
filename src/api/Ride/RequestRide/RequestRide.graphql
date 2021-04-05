@@ -3,8 +3,10 @@ type RequestRideResponse {
   error: String
   ride: Ride
 }
-input RequestRideInput{
-     pickUpAddress: String!
+
+type Mutation {
+  RequestRide(
+    pickUpAddress: String!
     pickUpLat: Float!
     pickUpLng: Float!
     dropOffAddress: String!
@@ -13,8 +15,5 @@ input RequestRideInput{
     price: Float!
     distance: String!
     duration: String!
-}
-
-type Mutation {
-  RequestRide(data:RequestRideInput!): RequestRideResponse!
+  ): RequestRideResponse!
 }

@@ -1,13 +1,8 @@
-
-input EditPlaceInput {
-     placeId: Int!, name: String, isFav: Boolean
-}
-
 type EditPlaceResponse {
-	ok: Boolean!
-	error: String
+  ok: Boolean!
+  error: String
 }
 
 type Mutation {
-	EditPlace(data:EditPlaceInput!): EditPlaceResponse!
+  EditPlace(placeId: Int!, name: String, isFav: Boolean): EditPlaceResponse!
 }

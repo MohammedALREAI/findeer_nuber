@@ -1,20 +1,20 @@
-import { optionsJWT } from "./../../../utils/index";
-import { Verification, User } from "../../../entities/index";
+import User from "../../../entities/User";
+import Verification from "../../../entities/Verification";
 import {
   CompletePhoneVerificationMutationArgs,
   CompletePhoneVerificationResponse,
 } from "../../../types/graph";
-import { Resolvers } from "./../../../types/index";
+import { Resolvers } from "../../../types/resolvers";
+import createJWT from "../../../utils/createJWT";
 
 const resolvers: Resolvers = {
   Mutation: {
     CompletePhoneVerification: async (
       _,
-      args: CompletePhoneVerificationMutationArgs
+      args: CompletePhoneVerificationMutationArgs,
     ): Promise<CompletePhoneVerificationResponse> => {
       const { phoneNumber, key } = args;
       try {
-        //  found the number phone with secial key that stored
         const verification = await Verification.findOne({
           payload: phoneNumber,
           key,
@@ -25,9 +25,10 @@ const resolvers: Resolvers = {
             error: "Verification key not valid",
             token: null,
           };
+        } else {
+          verification.verified = true;
+          verification.save();
         }
-        verification.verified = true;
-        verification.save();
       } catch (error) {
         return {
           ok: false,
@@ -38,17 +39,22 @@ const resolvers: Resolvers = {
 
       try {
         const user = await User.findOne({ phoneNumber });
-        if (!user) {
+        if (user) {
+          user.verifiedPhoneNumber = true;
+          user.save();
+          const token = createJWT(user.id);
           return {
             ok: true,
-            error: "please login in the application",
+            error: null,
+            token,
+          };
+        } else {
+          return {
+            ok: true,
+            error: null,
             token: null,
           };
         }
-        user.verifiedPhoneNumber = true;
-        user.save();
-        const token = optionsJWT.createJWT(user.id + "");
-        return newFunction(token);
       } catch (error) {
         return {
           ok: false,
@@ -61,14 +67,3 @@ const resolvers: Resolvers = {
 };
 
 export default resolvers;
-function newFunction(
-  token: string
-):
-  | CompletePhoneVerificationResponse
-  | PromiseLike<CompletePhoneVerificationResponse> {
-  return {
-    ok: true,
-    error: null,
-    token,
-  };
-}

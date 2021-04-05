@@ -1,14 +1,6 @@
-enum StatusState {
-  ACCEPTED
-  FINISHED
-  CANCELED
-  REQUESTING
-  ONROUTE
-}
-
 type Ride {
-  id: ID!
-  status: StatusState!
+  id: Int!
+  status: String!
   pickUpAddress: String!
   pickUpLat: Float!
   pickUpLng: Float!
@@ -25,5 +17,5 @@ type Ride {
   chat: Chat
   chatId: Int
   createdAt: String!
-  updatedAt: String!
+  updatedAt: String
 }
